@@ -6,10 +6,7 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 BASE_URL = "https://www.novojob.com"
-PAGE_URLS = [
-    f"{BASE_URL}/ci/offres?query=it&location=Abidjan&page=0",
-    f"{BASE_URL}/ci/offres?query=it&location=Abidjan&page=1",
-]
+PAGES = [0, 1]
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"
@@ -50,7 +47,8 @@ def parse_card(card_tag) -> dict:
 
 def main() -> None:
     offers = []
-    for url in tqdm(PAGE_URLS, desc="pages"):
+    for page in tqdm(PAGES, desc="pages"):
+        url = f"{BASE_URL}/ci/offres?query=it&location=Abidjan&page={page}"
         soup = fetch(url)
         cards = soup.select(".job-card")
         for card in tqdm(cards, desc="offers", leave=False):
@@ -59,7 +57,9 @@ def main() -> None:
                 break
         if len(offers) >= 40:
             break
-    Path("offers.json").write_text(json.dumps(offers, ensure_ascii=False, indent=2))
+    Path("offers.json").write_text(
+        json.dumps(offers, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
 
 if __name__ == "__main__":
     main()
