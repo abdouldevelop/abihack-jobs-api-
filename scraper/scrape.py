@@ -45,7 +45,7 @@ def parse_card(card_tag) -> dict:
         "skills": [s.get_text(strip=True) for s in skill_tags],
     }
 
-def main() -> None:
+def main() -> int:
     offers = []
     for page in tqdm(PAGES, desc="pages"):
         url = f"{BASE_URL}/ci/offres?query=it&location=Abidjan&page={page}"
@@ -60,6 +60,8 @@ def main() -> None:
     Path("offers.json").write_text(
         json.dumps(offers, ensure_ascii=False, indent=2), encoding="utf-8"
     )
+    return len(offers)
 
 if __name__ == "__main__":
-    main()
+    count = main()
+    print(f"Saved {count} offers to offers.json")
